@@ -92,36 +92,38 @@ void bst_insert(bst_node_t **tree, char key, int value) {
  */
 void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
     bst_node_t *tree_node = *tree;
+    
     if(tree_node != NULL){
-      if(tree_node->right->right){
-        bst_replace_by_rightmost(target, &tree_node->right);
-      }else{
-      if(tree_node->right){
-        if(tree_node->right->left != NULL){
-          target->value = tree_node->right->value;
-          target->key = tree_node->right->key;
-          tree_node->right = tree_node->right->left;
-          free(tree_node->right);
-          tree_node->right = NULL;
-        }else{
-          target->value = tree_node->right->value;
-          target->key = tree_node->right->key;
-          free(tree_node->right);
-          tree_node->right = NULL;
-        }
-      }else{
+      if(tree_node->right->right != NULL){
+          bst_replace_by_rightmost(target, &tree_node->right);
+      }else if(tree_node->right == NULL){
         target->value = tree_node->value;
         target->key = tree_node->key;
-        if(tree_node->right){
+        if(tree_node->left != NULL){
+          target->right = tree_node->left;
+        }else{
           target->right = NULL;
-        }                   
-        else{                             
-          target->right = tree_node->left; 
         }
         free(tree_node);
+      }else{
+        bst_node_t *father_node = target;
+        if(tree_node->right->left != NULL){
+          father_node = tree_node;
+          tree_node = tree_node->right;
+          target->value = tree_node->value;
+          target->key = tree_node->key;
+          father_node->right = tree_node->left;
+          free(tree_node);
+        }else{
+          father_node = tree_node;
+          tree_node = tree_node->right;
+          target->value = tree_node->value;
+          target->key = tree_node->key;
+          free(tree_node);
+          father_node->right = NULL;
+        }
       }
-    }
-  } 
+  }
 }
 
 /*
